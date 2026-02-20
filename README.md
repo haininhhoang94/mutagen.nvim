@@ -2,15 +2,30 @@
 Small plugin that provides some utils to interact with [mutagen](https://mutagen.io/documentation/synchronization/) through neovim.  
 It only covers the remote filesystem aspect of mutagen. Very useful for remote development.
 ## Features
-- Auto flush sync after buffer write
+- Auto flush sync after buffer write (only inside git repos whose root has `mutagen.yml`)
 - Telescope integration
 - Snacks picker integration
 - Sync status indicator in e.g. lualine
+
+Auto flush notifications are low-noise by default:
+- no popup on normal success
+- popup on first failure
+- duplicate failure popups throttled (60s cooldown)
+- one recovery popup after failures start succeeding again
 ## Install
 ```lua
   {
     "lothran/mutagen.nvim",
-    opts = {}
+    opts = {
+      auto_flush_debounce_ms = 400,
+      notifications = {
+        success = false,
+        failure = true,
+        recovery = true,
+        failure_cooldown_ms = 60000,
+        persistent_failure_reminder_ms = 300000,
+      },
+    }
   },
 ```
 ## Telescope
