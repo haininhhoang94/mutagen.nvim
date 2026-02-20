@@ -5,23 +5,23 @@ local finders = require "telescope.finders"
 local conf = require("telescope.config").values
 
 local M = {}
+local mutagen = require("mutagen")
 
 function M.sync_terminate(prompt_bufnr)
   actions.close(prompt_bufnr)
   local name = action_state.get_selected_entry().value
-  vim.system({ "mutagen", "sync", "terminate", name }, {}, function() end):wait(10)
+  mutagen.sync_terminate(name, 10)
 end
 
 function M.sync_flush(prompt_bufnr)
   actions.close(prompt_bufnr)
-  name = action_state.get_selected_entry().value
-  vim.system({ "mutagen", "sync", "flush", name }, {}, function() end):wait(10)
+  local name = action_state.get_selected_entry().value
+  mutagen.sync_flush(name, 10)
 end
 
 function M.telescope_list_syncs(opts)
   local opts = {}
-  local mut = require("mutagen")
-  local sync = mut.sync_list()
+  local sync = mutagen.sync_list()
   pickers.new(opts, {
     prompt_title = "syncs",
     finder = finders.new_table {
@@ -47,4 +47,3 @@ function M.telescope_list_syncs(opts)
   }):find()
 end
 return M
-

@@ -1,5 +1,17 @@
 local M = {}
 
+local function run_sync_command(action, name, wait_timeout)
+  if not name or name == "" then
+    return false
+  end
+
+  local handle = vim.system({ "mutagen", "sync", action, name }, {}, function() end)
+  if wait_timeout then
+    handle:wait(wait_timeout)
+  end
+  return true
+end
+
 function M.parse_sync_list(lines)
   local name = nil
   local sessions = {}
@@ -70,23 +82,31 @@ function M.sync_connected(sync)
 end
 
 function M.setup(opts)
+  _ = opts
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     callback = function(opt)
+      _ = opt
       local path = vim.fn.expand('%:p')
       local sync_done = function(res)
         local lines = vim.split(res.stdout, "\n")
         local sessions = M.parse_sync_list(lines)
         for _, session in ipairs(sessions) do
           if vim.startswith(path, session.alpha.url) or vim.startswith(path, session.beta.url) then
-            vim.system({ "mutagen", "sync", "flush", session.name }, { text = true },
-              function(_)
-              end)
+            M.sync_flush(session.name)
           end
         end
       end
       vim.system({ "mutagen", "sync", "list" }, {}, sync_done)
     end,
   })
+end
+
+function M.sync_flush(name, wait_timeout)
+  return run_sync_command("flush", name, wait_timeout)
+end
+
+function M.sync_terminate(name, wait_timeout)
+  return run_sync_command("terminate", name, wait_timeout)
 end
 
 function M.sync_find()

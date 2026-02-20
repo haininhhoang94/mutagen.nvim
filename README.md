@@ -3,7 +3,8 @@ Small plugin that provides some utils to interact with [mutagen](https://mutagen
 It only covers the remote filesystem aspect of mutagen. Very useful for remote development.
 ## Features
 - Auto flush sync after buffer write
-- Telscope integration
+- Telescope integration
+- Snacks picker integration
 - Sync status indicator in e.g. lualine
 ## Install
 ```lua
@@ -31,6 +32,33 @@ It only covers the remote filesystem aspect of mutagen. Very useful for remote d
 ```
 - enter to flush a sync
 - `<ctrl-t>` to terminate a sync (note this done by simple name matching, if two have the same name both will be terminated)
+
+## Snacks
+```lua
+{
+  "folke/snacks.nvim",
+  keys = {
+    {
+      "<space>ml",
+      function()
+        require("mutagen.snacks").picker()
+      end,
+      mode = { "n", "v" },
+      desc = "Mutagen: flush sync",
+    },
+    {
+      "<space>mT",
+      function()
+        require("mutagen.snacks").picker_terminate()
+      end,
+      mode = { "n", "v" },
+      desc = "Mutagen: terminate sync",
+    },
+  },
+}
+```
+- `picker()` selects a sync and flushes it.
+- `picker_terminate()` selects a sync and terminates it.
 
 ## Lualine
 ![alt text](./imgs/lualine.png)
