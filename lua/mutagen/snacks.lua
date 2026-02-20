@@ -28,12 +28,12 @@ local function select_sync(prompt, on_choice)
     return
   end
 
-  picker_select(syncs, on_choice, {
+  picker_select(syncs, {
     prompt = prompt,
     format_item = function(item)
       return item.name .. " status: " .. item.status
     end,
-  })
+  }, on_choice)
 end
 
 function M.picker(opts)
